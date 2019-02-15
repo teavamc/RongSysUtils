@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="db.properties"></properties>
+	<settings> 
+        <setting name="cacheEnabled" value="true" /><!-- 全局映射器启用缓存 --> 
+<!--         <setting name="logImpl" value="LOG4J"/>     -->
+    </settings>
+    <!-- 别名定义 -->
+	<typeAliases>
+
+		<!-- 批量别名定义 
+		指定包名，mybatis自动扫描包中的po类，自动定义别名，别名就是类名（首字母大写或小写都可以）
+		-->
+		<typeAlias type="com.socket.entity.BaseAttribs" alias="BaseAttribs"/>
+		<typeAlias type="com.socket.entity.Program_List" alias="Program_List"/>
+		<typeAlias type="com.socket.entity.Programmes" alias="Programmes"/>
+		<typeAlias type="com.socket.entity.Terminal_Conditions" alias="Terminal_Conditions"/>
+		<typeAlias type="com.socket.entity.Terminal_Recieve" alias="Terminal_Recieve"/>
+		<typeAlias type="com.socket.entity.TerminalTels" alias="TerminalTels"/>
+		<typeAlias type="com.socket.entity.TerTraffic" alias="TerTraffic"/>
+		<typeAlias type="com.socket.entity.LedShowInfo" alias="LedShowInfo"/>
+<!-- 		<package name="com.socket.entity"/> -->
+		
+	</typeAliases>
+    <environments default="development"><!-- 开发环境-->
+		<environment id="development">
+		<!-- 使用jdbc事务管理，事务控制是由mybatis-->
+			<transactionManager type="JDBC" />
+		<!-- 数据库连接池，由mybatis管理-->
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}" />
+				<property name="username" value="${jdbc.username}" />
+				<property name="password" value="${jdbc.password}" />
+				<property name="poolMaximumActiveConnections" value="${jdbc.poolMaximumActiveConnections}" /><!-- 在任意时间存在的活动(也就是正在使用)连 接的数量。默认值:10-->
+				<property name="poolPingEnabled" value="true"/><!-- 是否开启连接状态检测功能 -->
+				<property name="poolPingQuery" value="select 1 " /><!-- 检查连接状态的SQL语句 -->
+				<property name="poolPingConnectionsNotUsedFor" value="${jdbc.poolPingConnectionsNotUsedFor}"/><!--用来配置 poolPingQuery 多次时间被用一次。 这可以被设置匹配标准的数据库连接超时时间, 来避免不必要的侦测。-->
+			</dataSource>
+		</environment>
+	</environments>
+	<!-- 加载映射文件 -->
+	<mappers>
+		<mapper resource="mapper/BaseAttribsMapper.xml"/>
+		<mapper resource="mapper/ProgrammesMapper.xml"/>
+		<mapper resource="mapper/TerminalMapper.xml"/>
+		<mapper resource="mapper/TerminalTelsMapper.xml"/>
+		<mapper resource="mapper/TerTrafficMapper.xml"/>
+		<mapper resource="mapper/LedShowMapper.xml"/>
+<!-- 		<package name="com.socket.mapper"/> -->
+	</mappers>
+</configuration>

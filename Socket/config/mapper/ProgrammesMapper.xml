@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.mapper.ProgrammesMapper">
+<resultMap type="Programmes" id="programmesMap">
+		<id column="sfid" property="sfid"/>
+		<result column="scategory" property="scategory"/>
+		<result column="createtime" property="createtime"/>
+		<result column="broaddate" property="broaddate"/>
+		<result column="userid" property="userid"/>
+		<result column="remark" property="remark"/>
+		<result column="unpassreason" property="unpassreason"/>
+		<collection  property="prolist" ofType="Program_List">
+			<id column="PTp" property="protype"/>
+			<id column="FID" property="programid"/>
+			<id column="BT" property="begintime"/>
+			<result column="PID" property="proid"/>
+			<result column="FN" property="proname"/>
+			<result column="broadtime" property="broadtime"/>
+			<result column="Remark" property="remark"/>
+			<result column="FName" property="fname"/>
+			<result column="filename" property="filename"/>
+			<result column="Address" property="address"/>
+			<result column="Urls" property="urls"/>
+		</collection >
+	</resultMap>
+	<!-- 字段 -->
+	<sql id="Field">
+		 sfid,    
+	     scategory,
+	     createtime,
+	     broaddate,
+	     userid,
+	     remark
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		 #{sfid},    
+	     #{scategory},
+	     #{createtime},
+	     #{broaddate},
+	     #{userid},
+	     #{remark}
+	</sql>
+	
+	<!--播出单表名 -->
+	<sql id="tableName">
+		pro_sinmanage
+	</sql>
+	<!--播出单设备关联表表名 -->
+	<sql id="pro_terminalstable">
+		pro_terminals
+	</sql>
+	<!--播出单节目明细表表名 -->
+	<sql id="programsliststable">
+		pro_list
+	</sql>
+	<!--节目表表名 -->
+	<sql id="programstable">
+		programs
+	</sql>
+	<sql id="tertable">
+		terminals
+	</sql>
+		
+	<!--根据IMEI查询节目单 -->
+	<select id="getProgrammesByIMEI" parameterType="Map" resultMap="programmesMap">
+		select  
+			sfid,    
+	     scategory,
+	     createtime,
+	     broaddate,
+	     pro.remark ,PID,PTp,FN,prolist.FID as FID,BT,broadtime,prolist.Remark as Remark,FName,filename,Address,Urls
+		from 
+			(select sfid,    
+	     scategory,
+	     createtime,
+	     broaddate,
+	     remark from (<include refid="tableName"></include> ps 
+	     LEFT JOIN <include refid="pro_terminalstable"></include> pt on ps.sfid=pt.ProgrammeID )
+	     LEFT JOIN <include refid="tertable"></include> ter on ter.tid=pt.TerminalID
+	     where pt.TerminalID=#{imei} and ps.broaddate = #{date} and ter.isuse=1
+		order by createtime desc  LIMIT 0,1) pro 
+			left join (<include refid="programsliststable"></include> prolist 
+			left join <include refid="programstable"></include> pm on pm.FID=prolist.FID) on prolist.PID=pro.sfid
+	</select>
+	<!--根据播出单编号查询节目明细 -->
+	<select id="selectProgramListByProid" parameterType="String" resultType="Program_List">
+		select  PID,PTp,FN,prolist.FID as FID,BT,broadtime,prolist.Remark as Remark,FName,filename,Address,Urls
+		from 
+			<include refid="programstable"></include> pro,
+			<include refid="programsliststable"></include> prolist
+		where pro.FID=prolist.FID and prolist.PID=#{PID}
+		order by BT
+	</select>
+	<!--根据播出单编号查询节目明细 -->
+	<select id="getProAddressByFile" parameterType="String" resultType="String">
+		select Address
+		from 
+			<include refid="programstable"></include> pro
+		where filename = #{file}
+	</select>
+	
+</mapper>

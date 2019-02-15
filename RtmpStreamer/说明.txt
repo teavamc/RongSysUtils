@@ -1,0 +1,8 @@
+本文件夹是应急广播系统中流媒体直播前端的flash推流源码
+
+其中
+RtmpStreamer.as为源码
+RtmpStreamer.swf为编译文件
+
+请使用Adobe Flash CS5.5或更高级打开修改并编译好，将编译文件拷贝至流媒体直播前端
+Broad\WebRoot\WEB-INF\static\stream目录下

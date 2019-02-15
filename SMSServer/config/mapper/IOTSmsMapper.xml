@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sms.mapper.IOTSmsMapper">
+	<!--表名 -->
+	<sql id="tableName">
+		sendmessages
+	</sql>
+	<!--查询未发送短信 -->
+	<select id="getUnSendMessage" parameterType="String" resultType="Send" >
+		SELECT 
+		 smid,
+              smobile,
+              scontent,
+              sendtime,
+              sendtimes,
+              issend
+		from 
+			<include refid="tableName"></include> 
+		where issend=0 and sendtimes &lt;3
+			order by sendtime asc
+	</select>
+<!-- 	设置短信已发送 -->
+	<update id="setMessageSend" parameterType="Send">
+		update <include refid="tableName"></include>
+		set issend=#{issend},sendtimes=#{sendtimes}
+		where smid=#{smid}
+	</update>
+</mapper>

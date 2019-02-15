@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.mapper.LedShowMapper">
+	
+	
+	<!--表名 -->
+	<sql id="table">
+		ledshow
+	</sql>
+	<sql id="terledtable">
+		terminals_ledshow
+	</sql>
+		
+	<!--查询服务器属性 -->
+	<select id="getTerNewLedShow" parameterType="String"  resultType="LedShowInfo">
+		select  ls.lsid as lsid,content,showtime,createtime,tid
+		from 
+			<include refid="table"></include> ls
+			join (select * from <include refid="terledtable"/> where tid = #{tid}) tl on ls.lsid = tl.lsid
+			order by createtime desc limit 1
+	</select>
+	
+</mapper>

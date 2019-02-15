@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.mapper.TerTrafficMapper">
+	<!-- 字段 -->
+	<sql id="Field">
+		 ttid,    
+	     tid,
+	     usetraffic,
+	     lasttime,
+	     remark
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		 #{ttid},    
+	     #{tid},
+	     #{usetraffic},
+	     #{lasttime},
+	     #{remark}
+	</sql>
+	
+	<sql id="tableName">
+		terminal_traffic
+	</sql>
+	<sql id="terName">
+		terminals
+	</sql>
+		
+	<select id="getTerTrafficByIMEI" parameterType="String" resultType="TerTraffic">
+		select  ttid,    
+	     tt.tid as tid,
+	     usetraffic,
+	     lasttime,
+	     remark,trafficlimit
+		from <include refid="tableName"></include> tt left join <include refid="terName"></include> t on tt.tid = t.tid
+		where tt.tid=#{tid}
+	</select>
+	<update id="updateTerTrafficByIMEI" parameterType="TerTraffic">
+		update <include refid="tableName"></include>
+		set usetraffic=#{usetraffic} ,lasttime=#{lasttime}
+		where tid=#{tid}
+	</update>
+	<insert id="insertTerTraffic" parameterType="TerTraffic">
+		insert into <include refid="tableName"></include>
+		(tid,
+	     usetraffic,
+	     lasttime)
+		values( #{tid},
+	     #{usetraffic},
+	     #{lasttime})
+	</insert>
+</mapper>

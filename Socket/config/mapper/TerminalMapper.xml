@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.socket.mapper.TerminalMapper">
+<resultMap type="Terminal_Conditions" id="terminal_ConditionMap">
+		<id column="tid" property="terminalID"/>
+		<result column="hversion" property="hardwareVersion"/>
+		<result column="sversion" property="softwareVersion"/>
+		<result column="temp" property="temperature"/>
+		<result column="nettype" property="networkTypes"/>
+		<result column="qsignal" property="signalQuality"/>
+		<result column="sd" property="sdCapacity"/>
+		<result column="mp3" property="mp3Volume"/>
+		<result column="fm" property="fmVolume"/>
+		<result column="gsm" property="gsmVolume"/>
+		<result column="nullv" property="nullVolume"/>
+		<result column="transmitpower" property="transmitpower"/>
+		<result column="reflectedpower" property="reflectedpower"/>
+		<result column="workvoltage" property="workvoltage"/>
+		<result column="createtime" property="createdTime"/>
+		<result column="remark" property="remark"/>
+		<result column="transmitpower" property="transmitpower"/>
+		<result column="reflectedpower" property="reflectedpower"/>
+		<result column="workvoltage" property="workvoltage"/>
+		<result column="rds" property="rds"/>
+		<result column="fmfrequency" property="fmfrequency"/>
+		<result column="basestation" property="basestation"/>
+	</resultMap>
+	<!-- 字段 -->
+	<sql id="Field">
+		 tid,    
+		 aid,    
+		 hversion,    
+		 sversion,    
+		 temp,    
+		 nettype,    
+		 qsignal,    
+		 sd,    
+		 mp3,    
+		 fm,    
+		 gsm,    
+		 nullv,    
+		 createtime,    
+		 remark ,transmitpower,reflectedpower,workvoltage,rds,fmfrequency,basestation
+	</sql>
+	
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		 #{tid},    
+	     #{aid},
+	     #{hversion},
+	     #{sversion},
+	     #{temp},
+	     #{nettype},
+	     #{qsignal},
+	     #{sd},
+	     #{mp3},
+	     #{fm},
+	     #{gsm},
+	     #{nullv},
+	     #{createtime},
+	     #{remark},#{transmitpower},#{reflectedpower},#{workvoltage},#{rds},#{fmfrequency},#{basestation}
+	</sql>
+	
+	<!--表名 -->
+	<sql id="tableName">
+		ter_conditions
+	</sql>
+	<!--表名 -->
+	<sql id="terName">
+		terminals
+	</sql>
+	<sql id="terrecieveName">
+		terminal_receives
+	</sql>
+		
+	<!--查询终端交互时间 -->
+	<select id="getIntertime" parameterType="String"  resultType="String">
+		select  intertime
+		from  <include refid="terName"></include> 
+		where tid=#{imei}
+	</select>
+	<!--查询终端应急rds码和调频频率 -->
+	<select id="getRdsAndfreq" parameterType="String"  resultType="Map">
+		select  rds,fmfrequency
+		from  <include refid="terName"></include> 
+		where tid=#{imei}
+	</select>
+	<select id="getTerIsuse" parameterType="String"  resultType="Boolean">
+		select  isuse
+		from  <include refid="terName"></include> 
+		where tid=#{imei}
+	</select>
+	<!--查询终端状态 -->
+	<select id="getTerminalCondition" parameterType="String"  resultMap="terminal_ConditionMap">
+		select  <include refid="Field"></include>
+		from  <include refid="tableName"></include> 
+		where tid=#{imei}
+	</select>
+	<!--查询是否存在终端状态记录-->
+	<select id="existCondition" parameterType="String"  resultType="int">
+		select  count(tid)
+		from  <include refid="tableName"></include> 
+		where tid=#{imei}
+	</select>
+	<!--添加终端访问记录-->
+	<insert id="insertTerminalRecieve" parameterType="Terminal_Recieve"> 
+ 		insert into  
+			<include refid="terrecieveName"></include> 
+ 		( 
+ 			TerminalID,  ProgrammeID,  CreatedTime
+ 		) values ( 
+ 			#{TerminalID},#{ProgrammeID},#{CreatedTime}
+ 		) 
+	</insert> 
+	<!--编辑设备状态 -->
+	<update id="updateConditions1" parameterType="Terminal_Conditions">
+		update 
+		<include refid="tableName"></include> 
+		set hversion=#{hardwareVersion},  
+			sversion=#{softwareVersion},  
+			temp=#{temperature}, 
+			nettype=#{networkTypes}, 
+			qsignal=#{signalQuality}, 
+			sd=#{sdCapacity},  
+			createtime=#{createdTime}
+		where 
+			tid=#{terminalID}
+	</update>
+	<!--编辑设备状态 -->
+	<update id="updateConditions2" parameterType="Terminal_Conditions">
+		update 
+		<include refid="tableName"></include> 
+		set mp3=#{mp3Volume},  
+			fm=#{fmVolume},  
+			gsm=#{gsmVolume}, 
+			nullv=#{nullVolume}, 
+			createtime=#{createdTime}
+		where 
+			tid=#{terminalID}
+	</update>
+	<!--编辑设备状态 -->
+	<update id="updateConditions3" parameterType="Terminal_Conditions">
+		update 
+		<include refid="tableName"></include> 
+		set transmitpower=#{transmitpower}
+				,reflectedpower=#{reflectedpower}
+				,workvoltage=#{workvoltage}
+				,rds=#{rds}
+				,fmfrequency=#{fmfrequency}, 
+			createtime=#{createdTime}
+		where 
+			tid=#{terminalID}
+	</update>
+	<!--编辑设备基站信息 -->
+	<update id="updateBasestation" parameterType="Terminal_Conditions">
+		update 
+		<include refid="tableName"></include> 
+		set basestation=#{basestation},
+			createtime=#{createdTime}
+		where 
+			tid=#{terminalID}
+	</update>
+	<!--设置设备停用态 -->
+	<update id="updateTerNouse" parameterType="String">
+		update 
+		<include refid="terName"></include> 
+		set isuse=0
+		where 
+			tid=#{imei}
+	</update>
+	<!--添加终端状态记录-->
+	<insert id="insertConditionsOfIMEI" parameterType="Terminal_Conditions">
+		insert into 
+			<include refid="tableName"></include> 
+		(
+			tid,hversion,  sversion,  temp, nettype, qsignal, sd,mp3, fm, gsm, nullv,  createtime,transmitpower,reflectedpower,workvoltage,rds,fmfrequency,basestation
+		) values (
+			#{terminalID},#{hardwareVersion},  #{softwareVersion},  #{temperature}, #{networkTypes}, 
+			#{signalQuality}, #{sdCapacity },#{mp3Volume}, #{fmVolume}, #{gsmVolume}, #{nullVolume}, #{createdTime},#{transmitpower},#{reflectedpower},#{workvoltage},#{rds},#{fmfrequency},#{basestation}
+		)
+	</insert>
+	
+</mapper>
